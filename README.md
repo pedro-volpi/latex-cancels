@@ -1,4 +1,4 @@
-# cancel.sty (Extended Version)
+# cancels.sty (Extended Version)
 
 This is an extended version of the `cancel.sty` package, primarily intended for use in math animations (like those created with Manim). It provides commands to draw various cancellation marks—slashes, crosses, and 'cancelled-to' arrows—over mathematical expressions or text.
 
@@ -48,3 +48,32 @@ Find your personal TeX root: `kpsewhich --var-value=TEXMFHOME`
 Create the structure inside it: `tex/latex/cancels/`
 
 Place `cancels.sty` inside that folder.
+
+# Tikz version
+
+This package, a modern implementation of the original `cancel` package, uses **TikZ** to draw precise cancellation marks and arrows over mathematical expressions. This provides superior visual quality, color control, and flexibility, though it may be less compatible with external tools like Manim.
+
+**Requirements:** This package requires the **`amsmath`** and **`tikz`** packages, including the `calc` and `arrows.meta` TikZ libraries.
+
+### Commands
+
+All commands are designed for use exclusively in **Math Mode** (`$...$`). They are generally used to show a value being cancelled and replaced by another value.
+
+| Command | Syntax | Description | Output Direction |
+| :--- | :--- | :--- | :--- |
+| `\cancel{<expr>}` | `\cancel{x}` | Draws a simple diagonal **slash** through the expression. | N/A (Simple Slash) |
+| `\cancelto{<value>}{<expr>}` | `\cancelto{5}{10}` | Draws an arrow pointing **up-right** through the expression, labeling the value at the top-right. | ↗️ |
+| `\lcancelto{<value>}{<expr>}` | `\lcancelto{5}{10}` | Draws an arrow pointing **up-left** through the expression, labeling the value at the top-left. | ↖️ |
+| `\dcancelto{<value>}{<expr>}` | `\dcancelto{5}{10}` | Draws an arrow pointing **down-right** through the expression, labeling the value at the bottom-right. | ↘️ |
+| `\ldcancelto{<value>}{<expr>}` | `\ldcancelto{5}{10}` | Draws an arrow pointing **down-left** through the expression, labeling the value at the bottom-left. | ↙️ |
+
+***
+
+### Customization (TikZ Styles)
+
+The appearance is controlled by TikZ styles. You can redefine these in your preamble using `\tikzset{...}` to customize the lines, arrows, and labels globally.
+
+| TikZ Style Name | Default Definition | Controls |
+| :--- | :--- | :--- |
+| `cancel arrow` | `overlay, -{Stealth}, color=.` | The appearance of the cancellation arrow (line thickness, arrow tip, color). `color=.` matches the current text color. |
+| `cancel label` | `overlay, inner sep=2.5pt, scale=0.55` | The appearance of the "to" value label (font size, inner padding). |
