@@ -1,0 +1,130 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{cancels}[2025-10-07 v1.0 Cancel math terms]
+
+\RequirePackage{amsmath}
+\RequirePackage{tikz}
+\usetikzlibrary{calc, arrows.meta}
+
+
+% GLOBAL STYLES
+\tikzset{
+  cancel arrow/.style={
+    overlay,
+    -{Stealth[length=1.2mm,width=1mm]},  % Arrow tip
+    color=., % Special TikZ value that matches the color to the text's current color.
+  },
+  cancel label/.style={
+    overlay,
+    inner sep=2.5pt,
+    scale=0.55
+  },
+}
+
+
+\def\cancelStartPad{1pt}    % Padding at arrow start
+\def\cancelEndPad{3.3pt}      % Padding at arrow tip
+\def\cancelLabelPad{1.5pt}    % Label position offset
+\def\cancelDefaultPad{1pt}    % Label position offset
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  USE @ IN THE NAME OF THE MACRO TO AVOID CONFLICTS WITH USER DEFINED COMMANDS  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+% #1: The "to" value (e.g., 45)
+% #2: The current math style command (e.g., \displaystyle), passed by \mathpalette
+% #3: The "from" value (e.g., 90), passed by \mathpalette
+\def\@cancels@cancelto#1#2#3{%
+  \tikz[baseline=(content.base)]{
+    \node[inner sep=0pt] (content) {$#2#3$};
+    \draw[cancel arrow] 
+      ($(content.south west)!-\cancelStartPad!(content.north east)$) -- 
+      ($(content.north east)!-\cancelEndPad!(content.south west)$);
+    \node[cancel label, anchor=south west] 
+      at ($(content.north east)!-\cancelLabelPad!(content.south west)$)
+      {$#2#1$};
+  }%
+}
+\newcommand{\cancelto}[2]{%
+    \mathpalette{\@cancels@cancelto{#1}}{#2}%
+}
+
+% #1: The "to" value
+% #2: The current math style command (e.g., \displaystyle), passed by \mathpalette
+% #3: The "from" value, passed by \mathpalette
+\def\@cancels@lcancelto#1#2#3{%
+  \tikz[baseline=(content.base)]{
+    % The node now uses the math style (#2) provided by \mathpalette
+    \node[inner sep=0pt] (content) {$#2#3$};
+    
+    \draw[cancel arrow] 
+      ($(content.south east)!-\cancelStartPad!(content.north west)$) -- 
+      ($(content.north west)!-\cancelEndPad!(content.south east)$);
+
+    \node[cancel label, anchor=south east] 
+      at ($(content.north west)!-\cancelLabelPad!(content.south east)$)
+      % The style #2 is used to match the size of the main content.
+      {$#2#1$};
+  }%
+}
+
+% User interface:
+\newcommand{\lcancelto}[2]{%
+  \mathpalette{\@cancels@lcancelto{#1}}{#2}%
+}
+
+% #1: The "to" value
+% #2: The current math style command (e.g., \displaystyle), passed by \mathpalette
+% #3: The "from" value, passed by \mathpalette
+\def\@cancels@dcancelto#1#2#3{%
+  \tikz[baseline=(content.base)]{
+    \node[inner sep=0pt] (content) {$#2#3$};
+    \draw[cancel arrow] 
+      ($(content.north west)!-\cancelStartPad!(content.south east)$) -- 
+      ($(content.south east)!-\cancelEndPad!(content.north west)$);
+    \node[cancel label, anchor=north west] 
+      at ($(content.south east)!-\cancelLabelPad!(content.north west)$)
+      {$#2#1$};
+  }%
+}
+\newcommand{\dcancelto}[2]{%
+    \mathpalette{\@cancels@dcancelto{#1}}{#2}
+}
+
+% #1: The "to" value
+% #2: The current math style command (e.g., \displaystyle), passed by \mathpalette
+% #3: The "from" value, passed by \mathpalette
+\def\@cancels@ldcancelto#1#2#3{%
+  \tikz[baseline=(content.base)]{
+    \node[inner sep=0pt] (content) {$#2#3$};
+    \draw[cancel arrow] 
+      ($(content.north east)!-\cancelStartPad!(content.south west)$) -- 
+      ($(content.south west)!-\cancelEndPad!(content.north east)$);
+    \node[cancel label, anchor=north east] 
+      at ($(content.south west)!-\cancelLabelPad!(content.north east)$)
+      {$#2#1$};
+  }%
+}
+\newcommand{\ldcancelto}[2]{%
+    \mathpalette{\@cancels@ldcancelto{#1}}{#2}
+}
+
+% Internal "worker" macro for \cancel.
+% #1: The current math style (e.g., \displaystyle), passed by \mathpalette.
+% #2: The content to cancel, passed by \mathpalette.
+\def\@cancels@cancel#1#2{%
+  \tikz[baseline=(content.base)]{
+    % The node's content is typeset using the correct math style (#1).
+    \node[inner sep=0pt] (content) {$#1#2$};
+    \draw[overlay,color=.] 
+      ($(content.south west)!-\cancelDefaultPad!(content.north east)$) -- 
+      ($(content.north east)!-\cancelDefaultPad!(content.south west)$);
+  }%
+}
+
+\newcommand{\cancel}[1]{%
+  \mathpalette{\@cancels@cancel}{#1}%
+}
+\makeatother
+
+\endinput
